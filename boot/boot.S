@@ -1,14 +1,8 @@
-;------------------主引导程序--------------------
+;主引导程序boot
 
-
-;-----------------setup.S相关-------------------
-SETUP_BASE_ADDR equ 0x8FD
-SETUP_START_SECTOR equ 0x2
-
-;-------------16位模式初始化段寄存器---------------
 section boot vstart=0x7c00
 
-    mov ax, cs  ;BIOS加载mbr,cs变为0x7c00
+    mov ax, cs  ;BIOS加载mbr(boot.S),cs变为0x7c00
     mov ds, ax
     mov es, ax
     mov ss, ax
@@ -17,30 +11,28 @@ section boot vstart=0x7c00
     mov ax, 0xb800  ;显存基址
     mov gs, ax
 
-;------------------清屏-------------------------
+    ;清屏
     mov ax, 0600h
     mov bx, 0700h
     mov cx, 0
     mov dx, 184fh
     int 10h
 
-;------------------打印 "MBR"--------------------
 
-;------------------加载setup.S--------------------
-
-    mov eax, SETUP_START_SECTOR
+;加载setup.S
+    mov eax, 0x2          ;2扇区
     mov bx, 0x8FD
     
-    ; 读取1个扇区
+    ; 读取4个扇区
     mov cx, 4
-    call rd_disk_m_16       ;调用16位模式加载磁盘到内存函数
+    call read_setup       ;加载setup.S到内存
 
     
-    jmp SETUP_BASE_ADDR     ;直接跳到setup.S的起始代码执行
+    jmp 0x8fD     ;直接跳到setup.S的起始代码执行
 
-;-------------rd_disk_m_16函数--------------------
-; eax保存从硬盘读取到的数据的保存地址，ebx为起始扇区，cx为读取的扇区数
-rd_disk_m_16:
+
+;bx:目标内存地址 eax:起始扇区 cx:度入扇区数  
+read_setup:
 
     mov esi, eax
     mov di, cx
@@ -93,6 +85,5 @@ rd_disk_m_16:
     loop .go_on_read
     ret
 
-;-----------------补齐512B----------------
-    times 510-($-$$) db 0
-    db 0x55, 0xaa
+    times 510-($-$$) db 0   ;补齐512
+    db 0x55, 0xaa           ;mbr魔数

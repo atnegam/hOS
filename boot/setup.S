@@ -1,10 +1,11 @@
+;实模式
 
 section setup vstart=0x8FD
     
 jmp setup_start
 
-;--------------------创建GDT表-------------------------------------------------
-;一项占8字节
+
+;创建GDT表  一项占8字节
 GDT_BASE: dd 0x00000000
           dd 0x00000000
 
@@ -35,7 +36,7 @@ setupmsg db 'setup starting...'
 
 
 
-;-----------------------setup入口程序------------------
+;setup.S入口
 
 setup_start:
 ;test
@@ -45,34 +46,30 @@ setup_start:
     mov ax, 0x1301
     mov bx, 0x001f
     mov dx, 0x1800
-    int 0x10
+    int 0x10            ;BIOS中断
 
     call check_memory   ;检查物理内存容量
 
-;------------------------进入保护模式----------------
-;   1.打开A20   2.加载GDT表   3.将cr0 pe置1
-
     ; 开始进入保护模式
-    ; 打开A20地址线
+    
     in al, 0x92
     or al, 00000010B
-    out 0x92, al
+    out 0x92, al        ;打开A20地址线
 
-    ; 加载gdt
-    lgdt [gdt_ptr]
+    
+    lgdt [gdt_ptr]      ;加载gdt
 
-    ; cr0第0位置1
+    
     mov eax, cr0
     or eax, 0x00000001
-    mov cr0, eax
+    mov cr0, eax        ;cr0第0位置1
 
-    jmp dword GDT_CODE_SELECT:protect_start ; 刷新流水线进入保护模式
+    jmp dword GDT_CODE_SELECT:mode32_start  ;刷新流水线进入保护模式
 
 
 
-;检查物理内存容量   BUOS中断调用 int15h
+;检查物理内存容量   BIOS中断调用 int15h
 check_memory:
-
     xor ebx, ebx
     mov edx, 0x534d4150
     mov di, ards_buf
@@ -123,7 +120,7 @@ check_memory:
 
 ;第一个保护模式函数
 [bits 32]
-protect_start:
+mode32_start:
     mov ax, GDT_DATA_SELECT
     mov ds, ax
 
@@ -136,33 +133,33 @@ protect_start:
 
     call page_setup
 
-    ; 保存gdt表
+    ;保存gdt表
     sgdt [gdt_ptr]
 
-    ; 重新设置gdt描述符， 使虚拟地址指向内核的第一个页表
+    ;重新设置gdt描述符， 使虚拟地址指向内核的第一个页表
     mov ebx, [gdt_ptr + 2]
     or dword [ebx + 0x18 + 4], 0xc0000000
     add dword [gdt_ptr + 2], 0xc0000000
     
     add esp, 0xc0000000
 
-    ; 页目录基地址寄存器
+    ;页目录基地址寄存器
     mov eax, PAGE_BASE
     mov cr3, eax
 
-    ; 打开分页
+    ;打开分页
     mov eax, cr0
     or eax, 0x80000000
     mov cr0, eax
 
     lgdt [gdt_ptr]
     mov byte [gs:160], 'V'
-    jmp $	; 通过死循环使程序悬停在此
+    jmp $	;
 
 
 ;创建二级页表
 page_setup:
-
+    
     mov ecx, 4096
     mov esi, 0
 .pde_dir_clear:
@@ -173,16 +170,15 @@ page_setup:
 
 ;一个PDE分得空间(1*1024*1024*4K)，
 .pde_create:
-    mov eax, PAGE_BASE  ;
+    mov eax, PAGE_BASE  
     add eax, 0x1000      ;eax存放第一个页表的地址
     mov ebx, eax
-
     or eax, US_U | RW_W | PP
-    mov [PAGE_BASE + 0x0], eax
+    mov [PAGE_BASE + 0x00], eax
     mov [PAGE_BASE + 0xc00], eax
-    
     sub eax, 0x1000
     mov [PAGE_BASE + 4092], eax   ;最后一个表项指向自己,动态调整页表
+
 
     mov ecx, 256    ;先创建1M/4K=256个页
     mov esi, 0
@@ -201,7 +197,6 @@ page_setup:
     mov ebx, PAGE_BASE
     mov ecx, 254
     mov esi, 769
-
 .hight_1G_pde_create:
     mov [ebx+esi*4], eax
     inc esi
@@ -211,7 +206,7 @@ page_setup:
 
 
 
-;-----------------gdt表项各位段属性值---------------------------------------------
+;gdt表项各位段属性值
 
 ;GDT全局段描述符(8B=64bit) 平坦模式段空间=段界限*G=0xFFFFF*4K=0xFFFFFFFF=2^32-1=4G
 ;31~24          23  22   21   20    19~16  15  14~13 12   11~8    7~0
@@ -280,7 +275,7 @@ RPL3  equ   11b
 TI_GDT	 equ   000b
 TI_LDT	 equ   100b                   
 
-GDT_CODE_SELECT equ (0x0001 << 3) + TI_GDT + RPL0   ;
+GDT_CODE_SELECT equ (0x0001 << 3) + TI_GDT + RPL0  
 GDT_DATA_SELECT equ (0x0002 << 3) + TI_GDT + RPL0
 GDT_VIDEO_SELECT equ (0x0003 << 3) + TI_GDT + RPL0
 
@@ -288,15 +283,15 @@ GDT_VIDEO_SELECT equ (0x0003 << 3) + TI_GDT + RPL0
 
 ;页目录项结构(PDE)
 ;31        12 11 9  8  7  6  5   4    3    2   1  0
-;-------------------------------------------------------
+;-----------------------------------------------------
 ;| 地址       | AVL |G |0 |D |A |PCD |PWT |US |RW |P |
-;-------------------------------------------------------
+;-----------------------------------------------------
 
 ;页表项结构(PTE)
 ;31         12            7
-;-------------------------------------------------------
+;-----------------------------------------------------
 ;| 地址       |.....同上.| PAT |.................同上  |
-;-------------------------------------------------------
+;-----------------------------------------------------
 
 PAGE_BASE equ 0x100000
 
