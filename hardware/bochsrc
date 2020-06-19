@@ -1,0 +1,22 @@
+# Bochs配置文件
+
+# 机器内存: 32MB
+megs: 32
+
+romimage: file=/usr/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+
+# 启动方式
+boot: disk
+
+# 关闭鼠标
+mouse: enabled=0
+
+
+# 硬盘设置 
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="hd60M.img", mode=flat, cylinders=121, heads=16, spt=63
+#ata0-slave: type=disk, path="hd80M.img", mode=flat, cylinders=162, heads=16, spt=63
+
+
+#gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0
