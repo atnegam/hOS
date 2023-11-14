@@ -3,8 +3,8 @@
 # 机器内存: 32MB
 megs: 32
 
-romimage: file=/usr/share/bochs/BIOS-bochs-latest
-vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+romimage: file=/data/bochs/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/data/bochs/share/bochs/VGABIOS-lgpl-latest
 
 # 启动方式
 boot: disk
