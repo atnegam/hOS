@@ -1,9 +1,63 @@
-TI_GDT equ 0
-RPL0 equ 0
-SELECTOR_VIDEO equ (0x0003<<3)+TI_GDT+RPL0
+;TI_GDT equ 0
+;RPL0 equ 0
+;SELECTOR_VIDEO equ (0x0003<<3)+TI_GDT+RPL0
+
+put_int_buffer dq 0  ;8字节缓存区
 
 [bits 32]
 section .text
+
+global put_int
+put_int:
+	pushad
+	push ebp
+	mov ebp, esp
+	mov ebx, [ebp+40] ;获取参数
+	mov edx, ebx
+	mov eax, put_int_buffer
+	mov edi, 7 ;buffer中的偏移 
+	mov ecx, 8
+
+.do_per_4bit:
+	and ebx, 0x000F
+	cmp ebx, 9
+	jg .do_A_F
+	add ebx, '0'
+	jmp .save_per_4bit 
+.do_A_F:
+	sub ebx, 10
+	add ebx, 'A'
+
+.save_per_4bit:		
+	mov [eax+edi], bl
+	dec edi
+	shr edx, 4
+	mov ebx, edx
+	loop .do_per_4bit
+
+.dump0:
+	cmp edi, 7 ;至少7个0，直接打印最后一个字符
+	je .print_num
+
+	inc edi
+	mov bl, [eax+edi]
+	cmp bl, '0'
+	jz .dump0
+	
+.print_num:
+	;从buffer取出并打印
+	mov bl, [eax+edi]
+	push ebx
+	call put_char
+	add esp, 4
+	inc edi
+	cmp edi, 8
+	jl .print_num
+	
+	pop ebp
+	popad
+	ret
+
 
 global put_str
 put_str:
@@ -29,8 +83,8 @@ global put_char
 put_char:
 	pushad
 	;保证gs中为正确到视频段选择子
-	mov ax,SELECTOR_VIDEO
-	mov gs,ax
+	;mov ax,SELECTOR_VIDEO
+	;mov gs,ax
 	
 	;获取当前光标位置
 	;获得高8位

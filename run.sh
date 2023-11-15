@@ -1,3 +1,4 @@
 #!/bin/bash
 
-bochs -f /hardware/bochsrc
+cd hardware
+bochs -f bochsrc
