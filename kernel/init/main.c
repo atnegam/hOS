@@ -1,11 +1,14 @@
 #include "print.h"
-int main(void){
+#include "init.h"
 
-	put_str("\nput_str finish123456\n");
-	put_char('H');
-	put_char('\n');
-	put_int(0x1234F5A);
+int main(void){
+	put_str("\n Welcome to hOS. \n");
 	
+	//初始化各子系统
+	init();
+	
+	asm volatile ("sti");
+
 	while(1);
 	return 0;
 }
