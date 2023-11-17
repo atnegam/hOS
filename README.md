@@ -11,3 +11,5 @@
     sudo chmod a+x run.sh
     bash run.sh
 ```
+
+学习《操作系统真象还原》实现
