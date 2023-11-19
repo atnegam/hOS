@@ -1,33 +1,47 @@
 ; 内核例程
 
 %define ZERO push 0
-extern put_str
+;extern put_str
+extern int_handler_entry
 
 section .data
-irq_str db "interrupt occur!", 0xa, 0
+int_str db "interrupt occur!", 0xa, 0
 
-global irq_table
+global int_table
 
-irq_table:
+int_table:
 ;中断程序模版宏
 %macro vector 2
 section .text
-irq%1entry:
+int%1entry:
     %2
-    
-    push irq_str
-    call put_str
-    mov esp, 4
+    ;复杂中断程序一般会破坏段寄存器，如多任务调度，需备份
+    push ds
+    push es
+    push fs
+    push gs
+    pushad
 
     mov al, 0x20
     out 0xa0, al
     out 0x20, al
 
-    add esp, 4 ;
+    push %1
+
+    call [int_handler_entry + %1 * 4]
+    ;jmp int_exit
+    add esp, 4  ;过中断号
+    popad
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    add esp, 4  ;过错误码
+
     iret
 
 section .data
-    dd irq%1entry
+    dd int%1entry
 
 %endmacro
 

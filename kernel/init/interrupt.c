@@ -19,7 +19,7 @@
 */
 
 //定义中断描述符  64bit
-struct irq_desc {
+struct idt_desc {
     
     uint16_t offset_low;
     uint16_t selector; 
@@ -29,14 +29,14 @@ struct irq_desc {
 
 };
 
-#define IRQ_NUM 0x21
+#define INT_NUM 0x21
 
 //定义中断描述符表
-struct irq_desc irq_desc_list[IRQ_NUM];
+struct idt_desc IDT[INT_NUM];
 
 
 //初始化中断描述符
-void init_irq_desc(struct irq_desc* cur_desc, irq_handler irq_fun, uint8_t _attr){
+void init_idt_desc(struct idt_desc* cur_desc, interrupt_handler irq_fun, uint8_t _attr){
     
     cur_desc->offset_low = (uint32_t)irq_fun & 0x0000FFFF;
     cur_desc->selector = CODE_K_SELECTOR;
@@ -46,17 +46,42 @@ void init_irq_desc(struct irq_desc* cur_desc, irq_handler irq_fun, uint8_t _attr
 
 }
 
-extern irq_handler irq_table[IRQ_NUM];
+//中断服务程序路由表
+extern interrupt_handler int_table[INT_NUM];
 
 //初始化中断描述符表
-void init_irq_desc_list(){
+void init_idt(){
     put_str("init_irq_desc_list start......\n");
-    for(int i = 0; i < IRQ_NUM; i++){
-        init_irq_desc(&irq_desc_list[i], irq_table[i], IRQ_DESC_K_ATTR);
-        put_int(irq_table[i]);
+    for(int i = 0; i < INT_NUM; i++){
+        init_idt_desc(&IDT[i], int_table[i], IRQ_DESC_K_ATTR);
     }
     put_str("init_irq_desc_list done.\n");
 }
+
+//中断服务程序入口表
+interrupt_handler int_handler_entry[INT_NUM];
+
+//通用中断服务程序
+static void exception_handler(uint8_t irq_no){
+    if(irq_no == 0x27 || irq_no == 0x2f){
+        return;
+    }
+    put_str("irq_no: ");
+    put_int(irq_no);
+    put_char('\n');
+}
+
+//异常提示内容表
+char* exception_str[INT_NUM];
+
+//注册中断服务程序
+static void int_handler_reg(){
+    for(int i = 0; i < INT_NUM; i++){
+        int_handler_entry[i] = exception_handler;
+    }
+    //注册异常提示
+}
+
 
 //8259A 主(M)/从(S) 片数据与控制端口
 #define M_CTRL_PORT 0x20
@@ -87,14 +112,14 @@ void init_8259A(){
 }
 
 
-void irq_init(){
+void interrupt_init(){
     put_str("irq_init start......\n");
 
-    init_irq_desc_list();
+    init_idt();
+    int_handler_reg();
     init_8259A();
 
-    put_int(init_8259A);
-    uint64_t IDTR_DATA = (sizeof(irq_desc_list) - 1)|(uint64_t)((uint32_t)irq_desc_list << 16);
+    uint64_t IDTR_DATA = (sizeof(IDT) - 1)|(uint64_t)((uint32_t)IDT << 16);
    // asm volatile ("lidt %0" : : "m" (IDTR_DATA));
     asm volatile("lidt %0" : : "m" (IDTR_DATA));
 

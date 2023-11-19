@@ -5,7 +5,7 @@
 void init(){
     put_str("init start......\n");
     
-    irq_init();
+    interrupt_init();
     
     put_str("init done.\n");
 }
