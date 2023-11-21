@@ -104,14 +104,48 @@ void init_8259A(){
     outb(S_DATA_PORT, 0x02);
     outb(S_DATA_PORT, 0x01);
 
-    //接受时钟中断
-    //outb(M_DATA_PORT, 0xfe);
-    //outb(S_DATA_PORT, 0xff);
+   // 接受时钟中断
+    outb(M_DATA_PORT, 0xfe);
+    outb(S_DATA_PORT, 0xff);
 
     put_str("init_825A done.\n");
 }
 
 
+#define IF 0x00000200   //eflag IF位的值为1
+#define GET_FLAG(FLAG_VAL) asm volatile ("pushfl; popl %0" : "=g"(FLAG_VAL)) //取IF位值
+
+//获取中断状态
+enum int_state int_get_state(){
+    uint32_t eflag = 0;
+    GET_FLAG(eflag);
+    return eflag & IF? INT_NO:INT_OFF;
+}
+
+//开中断
+enum int_state int_enable(){
+    enum int_state old_state = int_get_state();
+    if(old_state == INT_OFF){
+        asm volatile ("sti");       
+    }
+    return old_state;
+}
+
+//关中断
+enum int_state int_disable(){
+    enum int_state old_state = int_get_state();
+    if(old_state == INT_NO){
+        asm volatile ("cli" : : :"memory");
+    }
+    return old_state;
+}
+
+//设置中断状态
+enum int_state int_set_state(enum int_state state){
+    return state & INT_NO? int_enable() : int_disable();
+}
+
+//中断子系统初始化
 void interrupt_init(){
     put_str("irq_init start......\n");
 
@@ -119,8 +153,7 @@ void interrupt_init(){
     int_handler_reg();
     init_8259A();
 
-    uint64_t IDTR_DATA = (sizeof(IDT) - 1)|(uint64_t)((uint32_t)IDT << 16);
-   // asm volatile ("lidt %0" : : "m" (IDTR_DATA));
+    uint64_t IDTR_DATA = (uint64_t)((uint32_t)IDT << 16)|(sizeof(IDT) - 1);
     asm volatile("lidt %0" : : "m" (IDTR_DATA));
 
     put_str("irq_init done.\n");
