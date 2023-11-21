@@ -21,9 +21,9 @@ static void time_set(uint8_t ctrl_port, uint8_t count_no, uint8_t rw_method, uin
     outb(count_port, init_value >> 8);
 }
 
-
+//定时/计数器初始化
 void time_init(){
-    put_str("time_init start...");
+    put_str("time_init start...\n");
     time_set(CTRL_PORT, COUNT_NO, RW_METHOD, WORK_MODE, COUNT_PORT, INIT_VALUE);
-    put_str("time_init done.");
+    put_str("time_init done.\n");
 }
