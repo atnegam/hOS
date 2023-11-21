@@ -142,7 +142,7 @@ enum int_state int_disable(){
 
 //设置中断状态
 enum int_state int_set_state(enum int_state state){
-    return state & INT_NO? int_enable() : int_disable();
+    return state == INT_NO? int_enable() : int_disable();
 }
 
 //中断子系统初始化

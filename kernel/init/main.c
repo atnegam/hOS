@@ -7,8 +7,10 @@ int main(void){
 	
 	//初始化各子系统
 	init();
-	int_enable(); 
+	//int_enable(); 
 	//int_disable();
+	int_set_state(INT_NO);
+	// int_set_state(INT_OFF);
 
 	while(1);
 	return 0;
