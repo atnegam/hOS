@@ -31,4 +31,5 @@
 #define IRQ_DESC_K_ATTR (IDT_DESC_P << 7) + (IDT_DESC_DPL0 << 5) + IDT_DESC_TYPE //0级
 #define IRQ_DESC_U_ATTR (IDT_DESC_P << 7) + (IDT_DESC_DPL1 << 5) + IDT_DESC_TYPE
 
+
 #endif

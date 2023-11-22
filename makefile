@@ -9,7 +9,8 @@ CCFLAG = -m32 -I include/ -c -fno-stack-protector -fno-builtin
 LD = ld
 LDFLAG = -m elf_i386 -Ttext $(kernel_entry) -e main 
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/print.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o \
-		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/time.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o
+		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/time.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
+		$(BUILD_DIR)/bitmap.o
 
 
 #.S bulid
@@ -36,6 +37,9 @@ $(BUILD_DIR)/debug.o: kernel/init/debug.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/string.o: kernel/lib/string.c
+	$(CC) $(CCFLAG) $^ -o $@
+
+$(BUILD_DIR)/bitmap.o: kernel/lib/bitmap.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 #.bin build
