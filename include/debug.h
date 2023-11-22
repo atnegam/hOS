@@ -1,7 +1,7 @@
 #ifndef DEBUG__H
 #define DEBUG__H
 
-void assert(char* filename, int line, char* func, char* condition);
+void assert(char* filename, int line, char* func, const char* condition);
 
 #define Assert(...) assert(__FILE__, __LINE__, __func__, __VA_ARGS__); 
 

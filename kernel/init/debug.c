@@ -2,9 +2,9 @@
 #include "print.h"
 #include "interrupt.h"
 
-void assert(char* filename, int line, char* func, char* condition){  
+void assert(char* filename, int line, char* func, const char* condition){  
 
-    int_set_state(INT_OFF);
+    enum int_state state = int_set_state(INT_OFF);
 
     put_char('\n');
     put_str("error:");
@@ -17,5 +17,5 @@ void assert(char* filename, int line, char* func, char* condition){
     put_char(':');
     put_str(condition);
 
-    int_set_state(INT_NO);
+    while(1);
 }
