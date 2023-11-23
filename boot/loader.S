@@ -23,7 +23,7 @@ GDT_LIMIT equ GDT_SIZE - 1  ;GDT表界限
 
 times 60 dq 0
 
-;GDT基址指针，用于加载GDT到GDTR寄存器
+;GDT基址指针，用于加载到GDT到GDTR寄存器
 gdt_ptr dw GDT_LIMIT        ;GDT界限         
         dd GDT_BASE         ;GDT基址
                  

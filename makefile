@@ -5,12 +5,12 @@ kernel_entry = 0xc0001500
 AS = nasm
 ASFLAG = -f elf
 CC = gcc
-CCFLAG = -m32 -I include/ -c -fno-stack-protector -fno-builtin
+CCFLAG = -m32 -I include/lib -I include/ -I include/kernel -c -fno-stack-protector -fno-builtin
 LD = ld
 LDFLAG = -m elf_i386 -Ttext $(kernel_entry) -e main 
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/print.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/time.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
-		$(BUILD_DIR)/bitmap.o
+		$(BUILD_DIR)/bitmap.o $(BUILD_DIR)/memory.o
 
 
 #.S bulid
@@ -21,25 +21,28 @@ $(BUILD_DIR)/kernel.o: kernel/kernel.S
 	$(AS) $(ASFLAG) $^ -o $@
 
 #.C build
-$(BUILD_DIR)/main.o: kernel/init/main.c
+$(BUILD_DIR)/main.o: kernel/main.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/init.o: kernel/init/init.c
 	$(CC) $(CCFLAG) $^ -o $@
 
-$(BUILD_DIR)/interrupt.o: kernel/init/interrupt.c
+$(BUILD_DIR)/interrupt.o: kernel/interrupt.c
 	$(CC) $(CCFLAG) $^ -o $@
 
-$(BUILD_DIR)/time.o: kernel/init/time.c
+$(BUILD_DIR)/time.o: kernel/time.c
 	$(CC) $(CCFLAG) $^ -o $@
 
-$(BUILD_DIR)/debug.o: kernel/init/debug.c
+$(BUILD_DIR)/debug.o: kernel/lib/debug.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/string.o: kernel/lib/string.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/bitmap.o: kernel/lib/bitmap.c
+	$(CC) $(CCFLAG) $^ -o $@
+
+$(BUILD_DIR)/memory.o: kernel/memory.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 #.bin build

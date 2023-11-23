@@ -1,11 +1,11 @@
 #include "string.h"
 #include "stdint.h"
 #include "debug.h"
-
+#include "stdvar.h"
 //逐字节操作
 
 void memset(void* _dst, uint8_t value, uint32_t cnt){
-    Assert(_dst != NULL);
+    ASSERT(_dst != NULL);
     uint8_t* dst = (uint8_t*)_dst; 
     while(cnt--) *dst++ = value;
 }
