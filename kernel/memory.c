@@ -171,6 +171,7 @@ void* malloc_page(enum PAGE_K_U page_flag, uint32_t cnt){
     return vaddr;
 }
 
+//申请cnt个内核空间页
 void* kernel_page_get(uint32_t cnt){
     void* vaddr = malloc_page(PAGE_K, cnt);
     if(vaddr != NULL){
@@ -178,11 +179,6 @@ void* kernel_page_get(uint32_t cnt){
     }
     return vaddr;
 }
-
-void testmm(){
-    put_str("testmm\n");
-}
-
 
 //初始化内存管理
 void mem_init(){
