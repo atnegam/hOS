@@ -13,7 +13,7 @@ bool bitmap_check(struct bitmap* bmp, uint32_t bit_ind){
     uint32_t byte_ind = bit_ind / 8;
     //超出情况？
     uint32_t offset = bit_ind % 8;
-    return bmp->addr[byte_ind + 1]&(1 << (8 - offset));
+    return bmp->addr[byte_ind + 1]&(1 << offset);
 }
 
 //获取连续cnt个可用位，返回其中第一个位
@@ -28,16 +28,16 @@ uint32_t bitmap_alloc(struct bitmap* bmp, uint32_t cnt){
     int bit_ind = byte_ind * 8;
     int tmp = bit_ind;
     while(bitmap_check(bmp, bit_ind++));
-    
+    //bit_ind--;
     uint32_t available = bmp->size * 8 - bit_ind + 1;
     if(cnt > available) return -1; //可用位不够
 
     int cur_cnt = 0;
     
-    bit_ind = tmp;
+    //bit_ind = tmp;
     uint32_t start_bit = bit_ind - 1;
     while(available--){
-        if(cur_cnt == cnt) return start_bit + 1; //返回连续可用cnt个位的第一位的bit_ind
+        if(cur_cnt == cnt) return start_bit; //返回连续可用cnt个位的第一位的bit_ind
         if(!bitmap_check(bmp, ++bit_ind)){
             cur_cnt++;
         }else{
@@ -53,7 +53,7 @@ void bitmap_set(struct bitmap* bmp, uint32_t bit_ind, uint8_t value){
     uint32_t byte_ind = bit_ind / 8;
     uint32_t offset = bit_ind % 8;
     if(value == 1)
-        bmp->addr[byte_ind + 1] |= (1 << (8 - offset));
+        bmp->addr[byte_ind + 1] |= (1 << offset);
     else 
-        bmp->addr[byte_ind + 1] &= ~(1 << (8 - offset));
+        bmp->addr[byte_ind + 1] &= ~(1 << offset);
 }

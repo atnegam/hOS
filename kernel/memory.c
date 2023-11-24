@@ -118,11 +118,16 @@ static void* virtual_page_get(enum PAGE_K_U page_flag, uint32_t cnt){
 //获得1个物理页
 static void* phy_page_get(struct pool* cur_pool){
     uint32_t bit_ind = bitmap_alloc(&cur_pool->bmp, 1);
-    if(bit_ind != -1){
-        bitmap_set(&cur_pool->bmp, bit_ind, 1);
-        return (uint32_t*)(cur_pool->bmp.addr + bit_ind * PAGE_SIZE);
+    put_int(bit_ind);
+    put_char('\n');
+    if(bit_ind == -1){
+        return NULL;
     }
-    else return NULL;
+    else{
+        bitmap_set(&cur_pool->bmp, bit_ind, 1);
+        // put_int(cur_pool->addr + bit_ind * PAGE_SIZE);
+        return (uint32_t*)(cur_pool->addr + bit_ind * PAGE_SIZE);
+    }
 }
 
 //注册物理页到页表pte
@@ -165,6 +170,7 @@ void* malloc_page(enum PAGE_K_U page_flag, uint32_t cnt){
     while(cnt-- > 0){
         void* phy_addr = phy_page_get(cur_pool);
         if(phy_addr == NULL) return NULL;
+        // put_int(phy_addr);
         page_register(phy_addr, (void*)_vaddr);
         _vaddr += PAGE_SIZE;
     }

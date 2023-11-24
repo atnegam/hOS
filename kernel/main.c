@@ -17,7 +17,7 @@ int main(void){
 	
 	// testmm();
 
-	void* arr = kernel_page_get(1);
+	void* arr = kernel_page_get(3);
 	// int len = strlen(arr);
 	put_int((uint32_t)arr);
 
