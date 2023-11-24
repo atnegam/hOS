@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "string.h"
 #include "stdvar.h"		
+#include "memory.h"
 
 int main(void){
 	put_str("\n Welcome to hOS. \n");
@@ -13,13 +14,12 @@ int main(void){
 	
 	int_set_state(INT_OFF);  //开中断
 	//int_set_state(INT_OFF);
-
-	uint32_t a = 0;
-	memset(&a, 1, 4);
-	put_int(a);
 	
-	
+	// testmm();
 
+	void* arr = kernel_page_get(1);
+	// int len = strlen(arr);
+	put_int((uint32_t)arr);
 
 	//char* str = NULL;
 	//char* str = "hello";
