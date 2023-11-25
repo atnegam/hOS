@@ -1,5 +1,5 @@
 
-## hOS ｜ Implementing a tiny OS
+## hOS ｜ 实现一个极简操作系统
 
 ### How to run
 
