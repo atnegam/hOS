@@ -26,6 +26,8 @@ enum PAGE_K_U{
 #define PAGE_K0 0
 #define PAGE_U4 4
 
+#define PAGE_SIZE 4096
+
 void* malloc_page(enum PAGE_K_U flag, uint32_t cnt);
 void* kernel_page_get(uint32_t cnt);
 

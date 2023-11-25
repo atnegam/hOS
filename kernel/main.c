@@ -5,6 +5,10 @@
 #include "string.h"
 #include "stdvar.h"		
 #include "memory.h"
+#include "thread.h"
+
+
+void testA(void* arg);
 
 int main(void){
 	put_str("\n Welcome to hOS. \n");
@@ -17,9 +21,9 @@ int main(void){
 	
 	// testmm();
 
-	void* arr = kernel_page_get(3);
+	// void* arr = kernel_page_get(3);
 	// int len = strlen(arr);
-	put_int((uint32_t)arr);
+	// put_int((uint32_t)arr);
 
 	//char* str = NULL;
 	//char* str = "hello";
@@ -30,7 +34,16 @@ int main(void){
 	//int_disable();
 	
 
+	thread_create("testA", 20, testA, "argA");
+
 
 	while(1);
 	return 0;
+}
+
+void testA(void* arg){
+	while(1){
+		put_str((char*)arg);
+		put_str(" ");
+	}
 }

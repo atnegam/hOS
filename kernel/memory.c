@@ -3,7 +3,7 @@
 #include "print.h"
 #include "debug.h"
 
-#define PAGE_SIZE 4096
+// #define PAGE_SIZE 4096
 #define BMP_BASE_ADDR 0xc009a000
 #define KERNEL_VIRTUAL_START 0xc0100000
 
