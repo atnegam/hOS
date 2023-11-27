@@ -2,6 +2,7 @@
 #define THREAD__H
 
 #include "stdint.h"
+#include "list.h"
 typedef void thread_fuc(void*);
 
 //中断栈
@@ -62,9 +63,20 @@ struct task_struct{
     uint32_t* kthread_stack;       //线程内核栈顶(中断栈+程序调用栈)
     enum task_state state;    //状态
     uint32_t piro;            //优先级
+    uint32_t ticks;           //当前可用的时间片, 初始为piro
+    uint32_t total_ticks;     //线程总共占用的时间片
+    struct list_node ready_tag;    //就绪队列
+    struct list_node global_tag;   //所有线程队列
     char task_name[20];              //线程name
+    uint32_t* pg_addr;
     uint32_t magic_num;            //检测内核栈溢出魔数  布局:PCB｜magic_num|kthread_stack
 };
+
+struct task_struct* cur_thread();
+
+void scheduler();
+
+void thread_init(void);
 
 struct task_struct* thread_create(char* name, int prio, thread_fuc* fuc, void* fuc_arg);
 

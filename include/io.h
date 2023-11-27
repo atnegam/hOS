@@ -7,7 +7,6 @@ static void outb(uint16_t port, uint8_t data){
     asm volatile ("outb %b0, %w1" : : "a" (data), "Nd"(port));
 }
 
-
 //将addr指向的cnt个字节写入port
 static  void outbsw(uint16_t port, void* addr, uint32_t cnt){
     asm volatile ("cld; rep outsw" : "+S"(addr), "+c"(cnt) : "d"(port));
@@ -23,6 +22,5 @@ static uint8_t inb(uint16_t port) {
 static void insw(uint16_t port, void* addr, uint32_t cnt){
     asm volatile ("cld; rep insw" : "+D" (addr), "+c" (cnt) : "d" (port) : "memory");
 }
-
 
 #endif

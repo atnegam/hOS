@@ -6,17 +6,20 @@
 #include "stdvar.h"		
 #include "memory.h"
 #include "thread.h"
+#include "list.h"
 
+int a = 0;
 
 void testA(void* arg);
+void testB(void* arg);
 
 int main(void){
 	put_str("\n Welcome to hOS. \n");
 
 	//初始化各子系统
 	init();
-	
-	int_set_state(INT_OFF);  //开中断
+	// int_set_state(INT_OFF);
+
 	//int_set_state(INT_OFF);
 	
 	// testmm();
@@ -34,14 +37,26 @@ int main(void){
 	//int_disable();
 	
 
-	thread_create("testA", 20, testA, "argA");
+	thread_create("testA", 30, testA, "argA");
+	thread_create("testB", 1, testB, "argB");
 
+	// int_set_state(INT_NO);  //开中断
+	int_enable();
 
-	while(1);
+	while(1){
+		// put_str("Main");
+	};
 	return 0;
 }
 
 void testA(void* arg){
+	while(1){
+		put_str((char*)arg);
+		put_str(" ");
+	}
+}
+
+void testB(void* arg){
 	while(1){
 		put_str((char*)arg);
 		put_str(" ");

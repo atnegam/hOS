@@ -29,7 +29,16 @@ int%1entry:
     push %1
 
     call [int_handler_entry + %1 * 4]
-    ;jmp int_exit
+    jmp int_exit
+
+section .data
+    dd int%1entry
+
+%endmacro
+
+section .text
+global int_exit
+int_exit:
     add esp, 4  ;过中断号
     popad
     pop gs
@@ -37,13 +46,8 @@ int%1entry:
     pop es
     pop ds
     add esp, 4  ;过错误码
+    iretd
 
-    iret
-
-section .data
-    dd int%1entry
-
-%endmacro
 
 
 vector 0x00, ZERO

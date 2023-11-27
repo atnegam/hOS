@@ -6,8 +6,8 @@ put_int_buffer dq 0  ;8字节缓存区
 
 [bits 32]
 section .text
-
 global put_int
+
 put_int:
 	pushad
 	push ebp

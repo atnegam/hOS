@@ -2,6 +2,7 @@
 #include "bitmap.h"
 #include "print.h"
 #include "debug.h"
+#include "string.h"
 
 // #define PAGE_SIZE 4096
 #define BMP_BASE_ADDR 0xc009a000
@@ -160,7 +161,6 @@ static void page_register(uint32_t* phyaddr, uint32_t* vaddr){
 //分配cnt个页内存，返回起始页虚拟地址
 void* malloc_page(enum PAGE_K_U page_flag, uint32_t cnt){
     ASSERT(cnt > 0 && cnt < 3840);
-    put_str("malloc_page\n");
     
     void* vaddr = virtual_page_get(page_flag, cnt);
     if(vaddr == NULL) return NULL;

@@ -66,22 +66,43 @@ static void exception_handler(uint8_t irq_no){
     if(irq_no == 0x27 || irq_no == 0x2f){
         return;
     }
-    put_str("irq_no: ");
-    put_int(irq_no);
-    put_char('\n');
+
+    // set_cursor(0);
+    // int cnt = 0;
+    // while(cnt < 400){
+    //     put_char(' ');
+    //     cnt++;
+    // }
+    // set_cursor(0);
+    if(irq_no == 14){
+        uint32_t page_fault_addr = 0;
+        asm ("movl %%cr2, %0" : "=r" (page_fault_addr));
+        put_char('\n');
+        put_str("page_fault_addr is ");
+        put_int(page_fault_addr);
+    }else{
+        put_str("irq_no: ");
+        put_int(irq_no);
+        put_char('\n');
+    }
+    while(1);
 }
 
 //异常提示内容表
 char* exception_str[INT_NUM];
 
-//注册中断服务程序
-static void int_handler_reg(){
+//注册异常服务程序
+static void exception_reg(){
     for(int i = 0; i < INT_NUM; i++){
         int_handler_entry[i] = exception_handler;
     }
     //注册异常提示
 }
 
+//注册中断服务程序
+void int_handler_reg(uint8_t irq_no, interrupt_handler fuc){
+    int_handler_entry[irq_no] = fuc;
+}
 
 //8259A 主(M)/从(S) 片数据与控制端口
 #define M_CTRL_PORT 0x20
@@ -150,7 +171,7 @@ void interrupt_init(){
     put_str("irq_init start......\n");
 
     init_idt();
-    int_handler_reg();
+    exception_reg();
     init_8259A();
 
     uint64_t IDTR_DATA = (uint64_t)((uint32_t)IDT << 16)|(sizeof(IDT) - 1);

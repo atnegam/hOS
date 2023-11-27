@@ -1,4 +1,5 @@
 #include "list.h"
+#include "interrupt.h"
 
 
 //init
@@ -11,6 +12,7 @@ void list_init(struct list* cur_list){
 
 //node节点之前插入cur_node
 void list_insert(struct list_node* node, struct list_node* cur_node){
+    enum int_state state = int_disable(); //暂时用关中断来同步
     /*
         1.断被插节点的前节点指向被插节点的链
         2.断被插节点指向前节点的链
@@ -19,6 +21,7 @@ void list_insert(struct list_node* node, struct list_node* cur_node){
     cur_node->pre = node->pre;
     node->pre = cur_node;
     cur_node->next = node;
+    int_set_state(state);
 }
 
 //头插
@@ -33,8 +36,10 @@ void tail_insert(struct list* cur_list, struct list_node* cur_node){
 
 //删除节点
 void list_delete(struct list_node* cur_node){
+    enum int_state state = int_disable();
     cur_node->pre->next = cur_node->next;
     cur_node->next->pre = cur_node->pre;
+    int_set_state(state);
 }
 
 //pop头元素
