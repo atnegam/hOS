@@ -27,8 +27,9 @@ static void kernel_thread(thread_fuc* fuc, void* fuc_arg){
     fuc(fuc_arg);
 }
 
+//初始化main线程PCB
 static void init_main_thread(){
-    struct task_struct* main_thread = cur_thread();
+    main_thread = cur_thread();
     memset(main_thread->task_name, 0, sizeof(*main_thread));
     strcpy(main_thread->task_name, "main_thread");
     main_thread->state = RUNING;
@@ -71,29 +72,40 @@ struct task_struct* task_struct_init(struct task_struct* ts, char* name, int pir
     return ts;
 }
 
+//线程阻塞
+void thread_block(enum task_state blocked){
+    enum int_state state = int_disable();
+    struct task_struct* cur = cur_thread();
+    cur->state = blocked; //设置为阻塞状态
+    // put_str("scheduler start...\n");
+    scheduler();
+    int_set_state(state);
+}
 
-void thread_init(void){
-    put_str("thread_init start...\n");
-
-    list_init(&ready_list);
-    list_init(&global_list);
-    init_main_thread();
-    
-    put_str("thread_init done.\n");
+//线程唤醒
+void thread_unblock(struct task_struct* ready_thread){
+    enum int_state state = int_disable();
+    if(ready_thread->state != READING){
+        ASSERT(!list_find(&ready_list ,&ready_thread->ready_tag));
+        head_insert(&ready_list ,&ready_thread->ready_tag);//插入就绪队头，优先调用
+        ready_thread->state = READING;
+    }
+    int_set_state(state); 
 }
 
 
-//线程调度程序
+//线程调度
 void scheduler(){
     ASSERT(int_get_state() == INT_OFF); //时钟中断时处理器自动关中断
     struct task_struct* thread = cur_thread();
-    if(thread->state = RUNING){//时间片耗尽
+    if(thread->state == RUNING){//时间片耗尽   "这个 “=” bug 找了半天 (´･_･`)"
         ASSERT(!list_find(&ready_list, &thread->ready_tag));
         tail_insert(&ready_list, &thread->ready_tag);
         thread->ticks == thread->piro;
         thread->state = READING;
     }else{//阻塞
         //
+        // put_str("waiting...\n");
     }
 
     //取next线程
@@ -127,4 +139,13 @@ struct task_struct* thread_create(char* name, int prio, thread_fuc* fuc, void* f
     return ts;
 }
 
+//初始化线程环境
+void thread_init(void){
+    put_str("thread_init start...\n");
 
+    list_init(&ready_list);
+    list_init(&global_list);
+    init_main_thread();
+    
+    put_str("thread_init done.\n");
+}

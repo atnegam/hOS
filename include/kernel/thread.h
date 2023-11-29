@@ -74,6 +74,10 @@ struct task_struct{
 
 struct task_struct* cur_thread();
 
+void thread_block();
+
+void thread_unblock(struct task_struct* ready_thread);
+
 void scheduler();
 
 void thread_init(void);

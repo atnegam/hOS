@@ -11,7 +11,7 @@ LDFLAG = -m elf_i386 -Ttext $(kernel_entry) -e main
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/print.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/time.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
 		$(BUILD_DIR)/bitmap.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/list.o \
-		$(BUILD_DIR)/switch.o
+		$(BUILD_DIR)/switch.o $(BUILD_DIR)/lock.o $(BUILD_DIR)/console.o
 
 
 #.S bulid
@@ -53,6 +53,12 @@ $(BUILD_DIR)/thread.o: kernel/thread.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/list.o: kernel/lib/list.c
+	$(CC) $(CCFLAG) $^ -o $@
+
+$(BUILD_DIR)/lock.o: kernel/lock.c
+	$(CC) $(CCFLAG) $^ -o $@
+
+$(BUILD_DIR)/console.o: kernel/console.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 #.bin build

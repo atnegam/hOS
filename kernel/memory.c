@@ -119,8 +119,8 @@ static void* virtual_page_get(enum PAGE_K_U page_flag, uint32_t cnt){
 //获得1个物理页
 static void* phy_page_get(struct pool* cur_pool){
     uint32_t bit_ind = bitmap_alloc(&cur_pool->bmp, 1);
-    put_int(bit_ind);
-    put_char('\n');
+    // put_int(bit_ind);
+    // put_char('\n');
     if(bit_ind == -1){
         return NULL;
     }

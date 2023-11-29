@@ -29,13 +29,13 @@ uint32_t time_ticks;
 
 //时钟中断程序
 void time_int_handler(){
-    time_ticks++;
     struct task_struct* thread = cur_thread();
     ASSERT(thread->magic_num == 0x19970405); //检测线程内核栈是否溢出
     thread->total_ticks++;
+    time_ticks++;
     if(thread->ticks > 0){
         thread->ticks--;
-        put_int(thread->ticks);
+        // put_int(thread->ticks);
     }else{
         scheduler();
     }

@@ -7,6 +7,8 @@
 #include "memory.h"
 #include "thread.h"
 #include "list.h"
+#include "lock.h"
+#include "console.h"
 
 int a = 0;
 
@@ -35,30 +37,39 @@ int main(void){
 
 	//int_enable(); 
 	//int_disable();
-	
 
-	thread_create("testA", 30, testA, "argA");
-	thread_create("testB", 1, testB, "argB");
+	thread_create("testA", 10, testA, "argA");
+	thread_create("testB", 10, testB, "argB");
 
 	// int_set_state(INT_NO);  //开中断
 	int_enable();
 
+
 	while(1){
+		console_putstr("Main ");
+		// int_disable();
 		// put_str("Main");
+		// put_int(b++);
+		// int_enable();
 	};
 	return 0;
 }
 
 void testA(void* arg){
+	static int a = 0;
 	while(1){
-		put_str((char*)arg);
-		put_str(" ");
+		console_putstr("argA ");
+		// int_disable();
+		// put_str("argA");
+		// int_enable();
 	}
 }
 
 void testB(void* arg){
 	while(1){
-		put_str((char*)arg);
-		put_str(" ");
+		console_putstr("argB ");
+		// int_disable();
+		// put_str("argB ");
+		// int_enable();
 	}
 }

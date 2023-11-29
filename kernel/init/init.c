@@ -4,6 +4,7 @@
 #include "time.h"
 #include "memory.h"
 #include "thread.h"
+#include "console.h"
 
 void init(){
     put_str("init start......\n");
@@ -14,6 +15,7 @@ void init(){
     time_init();        //初始化计数器/定时器
     mem_init();         //初始化内存管理
     thread_init();
+    console_init();
     
     put_str("init done.\n");
 }
