@@ -98,7 +98,7 @@ void thread_unblock(struct task_struct* ready_thread){
 void scheduler(){
     ASSERT(int_get_state() == INT_OFF); //时钟中断时处理器自动关中断
     struct task_struct* thread = cur_thread();
-    if(thread->state == RUNING){//时间片耗尽   "这个 “=” bug 找了半天 (´･_･`)"
+    if(thread->state == RUNING){//时间片耗尽   
         ASSERT(!list_find(&ready_list, &thread->ready_tag));
         tail_insert(&ready_list, &thread->ready_tag);
         thread->ticks == thread->piro;
