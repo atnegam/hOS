@@ -5,7 +5,7 @@ kernel_entry = 0xc0001500
 AS = nasm
 ASFLAG = -f elf
 CC = gcc
-CCFLAG = -m32 -I include/lib -I include/ -I include/kernel -c -fno-stack-protector -fno-builtin
+CCFLAG = -m32 -I include/lib -I include/ -I include/kernel -I include/device -c -fno-stack-protector -fno-builtin
 LD = ld
 LDFLAG = -m elf_i386 -Ttext $(kernel_entry) -e main 
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/print.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o \
@@ -34,7 +34,7 @@ $(BUILD_DIR)/init.o: kernel/init/init.c
 $(BUILD_DIR)/interrupt.o: kernel/interrupt.c
 	$(CC) $(CCFLAG) $^ -o $@
 
-$(BUILD_DIR)/time.o: kernel/time.c
+$(BUILD_DIR)/time.o: kernel/device/time.c
 	$(CC) $(CCFLAG) $^ -o $@
 
 $(BUILD_DIR)/debug.o: kernel/lib/debug.c

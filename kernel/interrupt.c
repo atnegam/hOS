@@ -29,7 +29,7 @@ struct idt_desc {
 
 };
 
-#define INT_NUM 0x21
+#define INT_NUM 0x22
 
 //定义中断描述符表
 struct idt_desc IDT[INT_NUM];
@@ -125,8 +125,9 @@ void init_8259A(){
     outb(S_DATA_PORT, 0x02);
     outb(S_DATA_PORT, 0x01);
 
-   // 接受时钟中断
-    outb(M_DATA_PORT, 0xfe);
+   
+    // outb(M_DATA_PORT, 0xfe); //仅接收时钟中断
+    outb(M_DATA_PORT, 0xfd);    //仅接收键盘中断
     outb(S_DATA_PORT, 0xff);
 
     put_str("init_825A done.\n");

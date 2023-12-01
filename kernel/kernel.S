@@ -82,4 +82,5 @@ vector 0x1C, ZERO
 vector 0x1D, ZERO
 vector 0x1E, ZERO
 vector 0x1F, ZERO
-vector 0x20, ZERO
+vector 0x20, ZERO   ;时钟中断入口
+vector 0x21, ZERO   ;键盘中断入口

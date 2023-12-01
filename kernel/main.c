@@ -46,7 +46,7 @@ int main(void){
 
 
 	while(1){
-		console_putstr("Main ");
+		// console_putstr("Main ");
 		// int_disable();
 		// put_str("Main");
 		// put_int(b++);
