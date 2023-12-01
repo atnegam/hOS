@@ -168,7 +168,7 @@ mode32_start:
     jmp 0xc0001500
 
 
-kernel_init:
+kernel_init:    ;加载解析kernel
 	xor eax,eax
 	xor ebx,ebx	;记录程序头表地址（内核地址+程序头表偏移地址）
 	xor ecx,ecx	;记录程序头中的数量
