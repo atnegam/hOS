@@ -44,7 +44,7 @@ int main(void){
 	// int_set_state(INT_NO);  //开中断
 	int_enable();
 
-
+	put_char('\t');
 	while(1){
 		// console_putstr("Main ");
 		// int_disable();
